@@ -1,41 +1,225 @@
-# Prompts.md — AI Usage & Transparency
+# RapidDispatch – Live Ops (Sprint 19)
 
-This file records representative AI assistance used while planning and implementing Sprint 19. Update it to reflect the actual prompts and assistance used by your team.
 
-## 1. Architecture planning
-**Prompt:** Design a full-stack real-time support ticket helpdesk using React, Express, and Socket.IO. Include a live ticket board, exclusive ticket locks, lock ownership, save validation, explicit unlock, and automatic lock cleanup on disconnect. Explain the event flow and deployment topology.
 
-**Applied:** Separated REST ticket loading/creation from Socket.IO real-time coordination. The backend owns the in-memory ticket collection and lock Map.
+### 1. Project Planning and Architecture
 
-## 2. Race-condition prevention
-**Prompt:** Show how to prevent two Socket.IO clients from acquiring the same ticket lock. Use a JavaScript Map keyed by ticket ID and ensure the check-and-set happens synchronously before acknowledging the request.
+```text
+Act as a senior full-stack software engineer.
 
-**Applied:** The `lock_ticket` handler checks the Map and writes the lock in one synchronous handler path. A competing request receives a rejected acknowledgement containing the current lock owner.
+Build a real-time RapidDispatch Live Ops application for managing
+delivery operations and support tickets.
 
-## 3. Preventing stale overwrites
-**Prompt:** How can the server prevent an agent with an old browser tab from overwriting a ticket after another agent acquired its lock?
+Requirements:
+- React.js frontend with Vite.
+- Node.js and Express.js backend.
+- Socket.IO for real-time communication.
+- REST API architecture.
+- Clean and modular project structure.
+- Responsive and modern dashboard UI.
+- Real-time ticket updates across multiple agents.
+```
 
-**Applied:** The `save_ticket` event verifies that the current lock exists and its `socketId` equals the saving socket's ID. The server, not the browser, decides whether the write is accepted.
+### 2. Backend Development
 
-## 4. Ghost disconnect cleanup
-**Prompt:** Implement a Socket.IO disconnect handler that finds all ticket locks owned by the disconnected socket ID, deletes them, and broadcasts an unlock event for every ticket.
+```text
+Create a Node.js and Express.js backend for RapidDispatch Live Ops.
 
-**Applied:** The backend iterates over the Map during `disconnect`, deletes matching records, and emits `ticket_unlocked`.
+Requirements:
+- Configure Express server.
+- Integrate Socket.IO.
+- Create a health-check API endpoint.
+- Configure environment variables.
+- Enable CORS for the frontend.
+- Handle client connections and disconnections.
+- Implement proper error handling.
+- Use a clean and maintainable code structure.
+```
 
-## 5. React Strict Mode and socket lifecycle
-**Prompt:** Explain why React Strict Mode may run effect setup and cleanup more than once in development, and show a safe Socket.IO client lifecycle that removes listeners and disconnects the socket during cleanup.
+### 3. Real-Time Communication
 
-**Applied:** The socket is created in a React effect, event listeners are registered there, and listeners are removed before disconnecting in cleanup. Development logs may show an extra connect/disconnect cycle under Strict Mode; this is expected and must not create duplicate listeners.
+```text
+Implement real-time communication using Socket.IO.
 
-## 6. Production CORS and WSS
-**Prompt:** Configure Express and Socket.IO CORS so a Vercel-hosted Vite frontend can connect securely to a Render-hosted Node backend over HTTPS/WSS. Use an explicit environment variable for allowed origins.
+Requirements:
+- Connect multiple agents to the same application.
+- Broadcast ticket updates instantly.
+- Synchronize changes across connected clients.
+- Handle connection and disconnection events.
+- Keep the application state updated without refreshing the page.
+```
 
-**Applied:** The backend reads `CLIENT_ORIGIN`; the frontend reads `VITE_API_URL` and `VITE_SOCKET_URL`. Production deployments must use the exact Vercel origin and HTTPS backend URL.
+### 4. Ticket Locking System
 
-## 7. Manual QA
-**Prompt:** Create a dual-browser-window test plan for ticket locking, rejection of a competing lock, save authorization, explicit unlock, and automatic unlock after closing the lock owner's tab.
+```text
+Implement a real-time ticket locking mechanism.
 
-**Applied:** The full demo checklist is included in `README.md`.
+Requirements:
+- Allow an agent to lock a ticket before editing.
+- Prevent other agents from editing a locked ticket.
+- Display the name of the agent currently holding the lock.
+- Show a clear locked status in the interface.
+- Allow the agent to save changes and release the lock.
+- Automatically release locks when an agent disconnects.
+- Prevent conflicting updates from multiple agents.
+```
 
-## AI transparency note
-AI assistance was used for implementation planning, code drafting, debugging guidance, documentation structure, and test-case design. The engineering team remains responsible for reviewing, testing, and understanding all submitted code. Replace or supplement these examples with the exact prompts used during your own development.
+### 5. Frontend Dashboard Development
+
+```text
+Act as a professional UI/UX designer and React developer.
+
+Create a modern RapidDispatch Live Ops dashboard.
+
+Requirements:
+- Responsive dashboard layout.
+- Clean navigation and organized sections.
+- Ticket management interface.
+- Agent activity and ticket status indicators.
+- Real-time updates using Socket.IO.
+- Clear visual feedback for locked tickets.
+- Modern typography, spacing, and interactive elements.
+- Support desktop and mobile screens.
+```
+
+### 6. API and Frontend Integration
+
+```text
+Integrate the React frontend with the Express backend.
+
+Requirements:
+- Configure API base URL using Vite environment variables.
+- Configure Socket.IO connection.
+- Fetch and update ticket information.
+- Handle API errors gracefully.
+- Display loading and connection states.
+- Keep frontend and backend data synchronized.
+```
+
+### 7. Testing and Debugging
+
+```text
+Act as a senior QA engineer.
+
+Test the RapidDispatch Live Ops application.
+
+Test scenarios:
+1. Start the backend and frontend.
+2. Verify the backend health endpoint.
+3. Connect multiple agents.
+4. Verify real-time ticket updates.
+5. Lock a ticket using Agent 1.
+6. Verify Agent 2 cannot edit the locked ticket.
+7. Save changes and release the ticket.
+8. Disconnect an agent and verify automatic lock release.
+9. Check API and Socket.IO errors.
+10. Verify responsive UI behavior.
+
+Identify bugs and provide practical fixes.
+```
+
+### 8. Git and GitHub Setup
+
+```text
+Prepare the RapidDispatch Live Ops project for GitHub.
+
+Requirements:
+- Initialize Git.
+- Create a proper .gitignore.
+- Exclude node_modules, .env, and dist folders.
+- Include .env.example files.
+- Create a professional README.md.
+- Create Prompts.md documentation.
+- Commit the project with a meaningful commit message.
+- Push the main branch to GitHub.
+```
+
+### 9. Backend Deployment on Render
+
+```text
+Prepare the RapidDispatch backend for Render deployment.
+
+Requirements:
+- Configure the production start command.
+- Read PORT from environment variables.
+- Configure CLIENT_ORIGIN.
+- Support production CORS settings.
+- Ensure Socket.IO works in production.
+- Provide the required environment variables.
+- Verify the deployed backend health endpoint.
+```
+
+### 10. Frontend Deployment on Vercel
+
+```text
+Prepare the RapidDispatch frontend for Vercel deployment.
+
+Requirements:
+- Configure Vite production build.
+- Configure VITE_API_URL.
+- Configure VITE_SOCKET_URL.
+- Connect the frontend to the deployed backend.
+- Configure Vercel routing.
+- Verify the production application.
+- Resolve deployment and API connection errors.
+```
+
+### 11. Code Quality and Optimization
+
+```text
+Review the complete RapidDispatch Live Ops codebase.
+
+Requirements:
+- Improve code readability and maintainability.
+- Remove unused code.
+- Optimize React components.
+- Improve API error handling.
+- Prevent duplicate Socket.IO listeners.
+- Check security and environment variable handling.
+- Ensure responsive design.
+- Preserve all existing working features.
+```
+
+### 12. Documentation
+
+```text
+Generate professional project documentation for RapidDispatch Live Ops.
+
+Include:
+- Project overview.
+- Problem statement.
+- Key features.
+- Technology stack.
+- Project folder structure.
+- Installation instructions.
+- Environment variable configuration.
+- Local development instructions.
+- Testing instructions.
+- Deployment instructions.
+- GitHub repository information.
+- Future improvements.
+```
+
+---
+
+## Project Information
+
+**Project:** RapidDispatch – Live Ops
+
+**Frontend:** React.js, Vite
+
+**Backend:** Node.js, Express.js
+
+**Real-Time Communication:** Socket.IO
+
+**Version Control:** Git and GitHub
+
+## Future Enhancements
+
+- Agent performance analytics.
+- Advanced ticket prioritization.
+- Role-based authentication.
+- Notifications and alerts.
+- Delivery tracking integration.
+- Advanced reporting dashboard.
+
