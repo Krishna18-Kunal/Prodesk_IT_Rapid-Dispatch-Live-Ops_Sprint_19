@@ -34,40 +34,6 @@ RapidDispatch-Live-Ops/
 └── README.md
 ```
 
-## Run locally
-
-### 1. Backend
-```bash
-cd backend
-npm install
-copy .env.example .env
-npm run dev
-```
-Backend runs at `http://localhost:5000`. Health check: `http://localhost:5000/health`.
-
-### 2. Frontend (new terminal)
-```bash
-cd frontend
-npm install
-copy .env.example .env
-npm run dev
-```
-Open `http://localhost:5173` in two separate browser windows. Use two different agent names, such as `Agent A` and `Agent B`.
-
-> On macOS/Linux, use `cp .env.example .env` instead of `copy`.
-
-## Environment variables
-
-### Backend
-- `PORT`: Render supplies this automatically; defaults to `5000`.
-- `CLIENT_ORIGIN`: comma-separated exact frontend origins. For local development use `http://localhost:5173`. For production use your Vercel URL, e.g. `https://your-app.vercel.app`. Multiple origins may be comma-separated.
-
-### Frontend
-- `VITE_API_URL`: backend origin, e.g. `http://localhost:5000`.
-- `VITE_SOCKET_URL`: Socket.IO backend origin, normally the same as `VITE_API_URL`.
-
-Do not put secrets in `VITE_` variables; frontend values are public.
-
 ## Production deployment
 
 ### Render (backend)
@@ -135,6 +101,3 @@ If using a Vercel preview URL, add that exact origin to `CLIENT_ORIGIN` too. Avo
 - If the browser shows a CORS error, inspect both Render logs and the browser console.
 - If Render free service is sleeping, the first request may take time to wake it.
 
-## Scripts
-Backend: `npm run dev`, `npm start`
-Frontend: `npm run dev`, `npm run build`, `npm run preview`
